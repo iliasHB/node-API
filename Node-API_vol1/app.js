@@ -6,7 +6,7 @@ const Blog = require('./models/blog');
 //create instance of express server
 const app = express(); 
 //connect to mongodb
-const dbURL = 'mongodb+srv://habeeb:test1234@nodetuts.wmv56ho.mongodb.net/node-tuts?retryWrites=true&w=majority';
+const dbURL = '';//
 mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true})
 .then((result) => app.listen(3000))
 .catch((error) => console.log(error)) 
