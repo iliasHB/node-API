@@ -156,23 +156,23 @@ app.delete('/register/users/:id', (req, res) => {
     })
 })
 
-// ///----------- List of all register user API -------------------
-// app.get('/register/users', (req, res) => {
-//     Register.find().sort({ createdAt: -1 }).then((result) => {
-//         return res.json({
-//             status: "Sucess",
-//             message: "Register users retrieved successfully",
-//             data: result
-//         })
-//     }).catch((error) => {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "No response from the backend",
-//             data: error
-//         })
-//     })
+///----------- List of all register user API -------------------
+app.get('/register/users', (req, res) => {
+    Register.find().sort({ createdAt: -1 }).then((result) => {
+        return res.json({
+            status: "Sucess",
+            message: "Register users retrieved successfully",
+            data: result
+        })
+    }).catch((error) => {
+        return res.status(404).json({
+            status: "Failed",
+            message: "No response from the backend",
+            data: error
+        })
+    })
 
-// })
+})
 
 // ///---------API to update user record ------------------------
 
