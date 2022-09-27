@@ -136,25 +136,25 @@ app.get('/register/users/:id', (req, res) => {
     })
 })
 
-// ///------------ API to delete a Particular user record --------------
-// app.delete('/register/users/:id', (req, res) => {
-//     const id = req.params.id;
-//     console.log(id);
-//     Register.findByIdAndDelete(id).then((result) => {
-//         return res.json({
-//             status: "Sucess",
-//             message: "User deleted successfully",
-//             data: result
-//         })
-//     }).catch((error) => {
-//         console.log(error)
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "No response from the backend",
-//             data: error
-//         })
-//     })
-// })
+///------------ API to delete a Particular user record --------------
+app.delete('/register/users/:id', (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    Register.findByIdAndDelete(id).then((result) => {
+        return res.json({
+            status: "Sucess",
+            message: "User deleted successfully",
+            data: result
+        })
+    }).catch((error) => {
+        console.log(error)
+        return res.status(404).json({
+            status: "Failed",
+            message: "No response from the backend",
+            data: error
+        })
+    })
+})
 
 // ///----------- List of all register user API -------------------
 // app.get('/register/users', (req, res) => {
