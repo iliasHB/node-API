@@ -25,95 +25,95 @@ app.use(express.json({ extended: false }));
 app.use('/webservice', apiroute);
 
 
-// ///------------ Register User API --------------------------
-// app.post('/register', async (req, res) => {
-//     //var token = jwt.sign({ id: user.id }, "password")
-//     const { username, email, password } = req.body
-//     console.log(username)
-//     console.log(password)
-//     console.log(email)
-//     let user = await Register.findOne({ email })
-//     if (user) {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "Registration Failed, email already exist",
-//         })
-//     }
-//     user = new Register({
-//         username,
-//         email,
-//         password,
-//     })
-//     var token = jwt.sign({ id: user.id }, "password")
-//     console.log(user)
-//     if (username == '' || email == '' || password == '') {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "Registeration failed, No data supplied by the user",
-//         })
-//     } else {
-//         await user.save().then(() => {
-//             return res.json({
-//                 status: "sucess",
-//                 message: "The registeration is successful",
-//                 data: token
-//             })
-//         }).catch((error) => {
-//             return res.status(404).json({
-//                 status: "Failed",
-//                 message: "No response from the backend",
-//                 data: error
-//             })
-//         })
-//     }
+///------------ Register User API --------------------------
+app.post('/register', async (req, res) => {
+    //var token = jwt.sign({ id: user.id }, "password")
+    const { username, email, password } = req.body
+    console.log(username)
+    console.log(password)
+    console.log(email)
+    let user = await Register.findOne({ email })
+    if (user) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "Registration Failed, email already exist",
+        })
+    }
+    user = new Register({
+        username,
+        email,
+        password,
+    })
+    var token = jwt.sign({ id: user.id }, "password")
+    console.log(user)
+    if (username == '' || email == '' || password == '') {
+        return res.status(404).json({
+            status: "Failed",
+            message: "Registeration failed, No data supplied by the user",
+        })
+    } else {
+        await user.save().then(() => {
+            return res.json({
+                status: "sucess",
+                message: "The registeration is successful",
+                data: token
+            })
+        }).catch((error) => {
+            return res.status(404).json({
+                status: "Failed",
+                message: "No response from the backend",
+                data: error
+            })
+        })
+    }
 
-// });
+});
 
-// ///-----------Login API--------------------------
-// app.post('/login', async (req, res) => {
-//     const { email, password } = req.body
-//     let user = await Register.findOne({ email })
+///-----------Login API--------------------------
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body
+    let user = await Register.findOne({ email })
 
-//     console.log(user)
-//     if (!user) {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "User does not exist",
-//         })
-//     } else if (user.password !== password) {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "Password is Incorrect",
-//         })
-//     } else {
-//         var token = jwt.sign({ id: user.id }, "password")
-//         return res.json({
-//             status: "Sucess",
-//             message: "Login successful",
-//             token: token,
-//             data: user
-//         })
-//     }
-// })
+    console.log(user)
+    if (!user) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "User does not exist",
+        })
+    } else if (user.password !== password) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "Password is Incorrect",
+        })
+    } else {
+        var token = jwt.sign({ id: user.id }, "password")
+        return res.json({
+            status: "Sucess",
+            message: "Login successful",
+            token: token,
+            data: user
+        })
+    }
+})
 
 
-// app.get('/homepage', (req, res) => {
-//     let token = req.header("token");
-//     if(!token) {
-//         return res.status(404).json({
-//             status: "Failed",
-//             message: "You don't have access to this page",
-//         })
-//     } else {
-//         var decoded = jwt.verify(token, "password");
-//         console.log(decoded.id);
-//         return res.json({
-//             status: "Success",
-//             message: "Welcome to homepage",
-//             data: []
-//         })
-//     }
-// })
+app.get('/homepage', (req, res) => {
+    let token = req.header("token");
+    if(!token) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "You don't have access to this page",
+        })
+    } else {
+        var decoded = jwt.verify(token, "password");
+        console.log(decoded.id);
+        return res.json({
+            status: "Success",
+            message: "Welcome to homepage",
+            data: []
+        })
+    }
+})
 // ///------------ API to retrieve a Particular user record --------------
 
 // app.get('/register/users/:id', (req, res) => {
