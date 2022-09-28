@@ -5,7 +5,7 @@ const userPost = require('../models/userpost');
 
 
 const api_userPost = async (req, res) => {
-    const {userId,postId, username, postBody} = req.body;
+    const {userId, postId, username, postBody} = req.body;
     let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
     let post_Id = Date().substring(22, 25).trim()+rd; //dateFormat("hh:mm:ss");
     //console.log(">>>>>>>>>>>>>>>>ramdom: "+rd);
@@ -36,7 +36,7 @@ const api_userPost = async (req, res) => {
               return res.json({
                   status: "sucess",
                   message: "The Post is successful",
-                  data: [result.username, result.postBody]
+                  data: {"username": result.username, "body": result.postBody, "date": result.createdAt}
               })
           }).catch((error) => {
               return res.status(404).json({
