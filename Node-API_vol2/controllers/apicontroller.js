@@ -27,6 +27,51 @@ const api_login = async (req, res) => {
     }
 }
 
+
+///------------ Register User API --------------------------
+const api_register = async (req, res) => {
+      //var token = jwt.sign({ id: user.id }, "password")
+      const { username, email, password } = req.body
+      console.log(username)
+      console.log(password)
+      console.log(email)
+      let user = await Register.findOne({ email })
+      if (user) {
+          return res.status(404).json({
+              status: "Failed",
+              message: "Registration Failed, email already exist",
+          })
+      }
+      user = new Register({
+          username,
+          email,
+          password,
+      })
+      var token = jwt.sign({ id: user.id }, "password")
+      console.log(user)
+      if (username == '' || email == '' || password == '') {
+          return res.status(404).json({
+              status: "Failed",
+              message: "Registeration failed, No data supplied by the user",
+          })
+      } else {
+          await user.save().then(() => {
+              return res.json({
+                  status: "sucess",
+                  message: "The registeration is successful",
+                  data: token
+              })
+          }).catch((error) => {
+              return res.status(404).json({
+                  status: "Failed",
+                  message: "No response from the backend",
+                  data: error
+              })
+          })
+      }
+  
+  }
+
 const api_homepage = (req, res) => {
     let token = req.header("token");
     if(!token) {
@@ -103,6 +148,7 @@ const api_allUser = (req, res) => {
 ///---------API to update user record ------------------------
 const api_updateUserRecord = async (req, res) => {
     let id = req.params.id;
+    let token = req.header("token");
     //let { Username, Email, Password } = req.body
     let Username = req.body.username;
     let Email = req.body.email;
@@ -110,32 +156,52 @@ const api_updateUserRecord = async (req, res) => {
 
     console.log(">>>>>>>>>> id: " + id)
 
-    Register.findOneAndUpdate(
-        { _id: id },
-        { $set: { username: Username, email: Email, password: Password } },
-        { new: true }, (err, data) => {
-            if (err) {
-                return res.json({
-                    status: "Failed",
-                    message: "No record found to Update"
-                })
-            } else if (data == null) {
-                return res.json({
-                    status: null,
-                    message: "No data"
-                })
-            } else {
-                return res.json({
-                    status: "Success",
-                    message: data
-                })
-            }
+    if(!token) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "You don't have access to edit a record",
         })
+    } else {
+        var decoded = jwt.verify(token, "password");
+        console.log(decoded.id);
 
+        Register.findOneAndUpdate(
+            { _id: id },
+            { $set: { username: Username, email: Email, password: Password } },
+            { new: true }, (err, data) => {
+                if (err) {
+                    return res.json({
+                        status: "Failed",
+                        message: "No record found to Update"
+                    })
+                } else if (data == null) {
+                    return res.json({
+                        status: null,
+                        message: "No data"
+                    })
+                } else {
+                    console.log(data);
+                    return res.json({
+                        status: "Success",
+                        message: data
+                    })
+                   
+                }
+            })
+    
+        // return res.json({
+        //     status: "Success",
+        //     message: "Welcome to homepage",
+        //     data: []
+        // })
+    }
+
+    
 }
 
 module.exports = {
     api_login,
+    api_register,
     api_homepage,
     api_findUserById,
     api_deleteUser,
