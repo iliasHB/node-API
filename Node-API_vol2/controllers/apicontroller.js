@@ -199,6 +199,8 @@ const api_updateUserRecord = async (req, res) => {
     
 }
 
+
+
 module.exports = {
     api_login,
     api_register,
@@ -206,5 +208,5 @@ module.exports = {
     api_findUserById,
     api_deleteUser,
     api_allUser,
-    api_updateUserRecord
+    api_updateUserRecord,
 }
