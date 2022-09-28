@@ -12,8 +12,8 @@ async function connectDB() {
             if (err) {
                 console.log(">>>>> database connection Failed: " + err)
             } else {
-                console.log(">>>>>> Successfully connected to database!!!")
-                app.listen(5000, () => console.log("Listening on port 5000 !!!"))
+                console.log(">>>>>> Successfully connected to database !!!")
+                app.listen(5000, () => console.log(">>>>>>>>>>> Listening on port 5000 !!!"))
             }
         },
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -174,37 +174,37 @@ app.get('/register/users', (req, res) => {
 
 })
 
-// ///---------API to update user record ------------------------
+///---------API to update user record ------------------------
 
-// app.put('/register/users/:id', async (req, res) => {
-//     let id = req.params.id;
-//     //let { Username, Email, Password } = req.body
-//     let Username = req.body.username;
-//     let Email = req.body.email;
-//     let Password = req.body.password;
+app.put('/register/users/:id', async (req, res) => {
+    let id = req.params.id;
+    //let { Username, Email, Password } = req.body
+    let Username = req.body.username;
+    let Email = req.body.email;
+    let Password = req.body.password;
 
-//     console.log(">>>>>>>>>> id: " + id)
+    console.log(">>>>>>>>>> id: " + id)
 
-//     Register.findOneAndUpdate(
-//         { _id: id },
-//         { $set: { username: Username, email: Email, password: Password } },
-//         { new: true }, (err, data) => {
-//             if (err) {
-//                 return res.json({
-//                     status: "Failed",
-//                     message: "No record found to Update"
-//                 })
-//             } else if (data == null) {
-//                 return res.json({
-//                     status: null,
-//                     message: "No data"
-//                 })
-//             } else {
-//                 return res.json({
-//                     status: "Success",
-//                     message: data
-//                 })
-//             }
-//         })
+    Register.findOneAndUpdate(
+        { _id: id },
+        { $set: { username: Username, email: Email, password: Password } },
+        { new: true }, (err, data) => {
+            if (err) {
+                return res.json({
+                    status: "Failed",
+                    message: "No record found to Update"
+                })
+            } else if (data == null) {
+                return res.json({
+                    status: null,
+                    message: "No data"
+                })
+            } else {
+                return res.json({
+                    status: "Success",
+                    message: data
+                })
+            }
+        })
 
-// })
+})
