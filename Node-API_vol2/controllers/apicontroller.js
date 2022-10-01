@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const api_login = async (req, res) => {
     const { email, password } = req.body
-    let user = await Register.findOne({ email })
+    let user = await Register.find({ email, username })
 
     console.log(user)
     if (!user) {

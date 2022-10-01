@@ -23,10 +23,11 @@ const api_userPost = async (req, res) => {
             message: "You don't have permission to post"
         })
     }
-    
+
     let post = new userPost({
         authorId,
         userId,
+        username: user.username,
         postId: post_Id,
         postBody
     })
@@ -43,7 +44,7 @@ const api_userPost = async (req, res) => {
               return res.json({
                   status: "sucess",
                   message: "The Post is successful",
-                  data: {"userInfo": user, "body": result.postBody, "date": result.createdAt}
+                  data: {"userInfo": user, "body": result}
               })
           }).catch((error) => {
               return res.status(404).json({
