@@ -4,6 +4,10 @@ const Schema = mongoose.Schema;
 
 
 const postSchema = new Schema({
+    authorId:{
+        type: String,
+        require: true
+    },
     userId:{
         type: String,
         require: true

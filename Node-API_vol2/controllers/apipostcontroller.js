@@ -5,7 +5,7 @@ const userPost = require('../models/userpost');
 
 
 const api_userPost = async (req, res) => {
-    const {userId, postId, username, postBody} = req.body;
+    const {userId, authorId, postId, username, postBody} = req.body;
     //let _id = userId;
     let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
     let post_Id = Date().substring(22, 25).trim()+rd; //dateFormat("hh:mm:ss");
@@ -19,8 +19,14 @@ const api_userPost = async (req, res) => {
             status: "Failed",
             message: "User does not exist"
         })
+    } else if(userId !== authorId) {
+        return res.json({
+            status: "Failed",
+            message: "You don't have permission to post with someone else userId"
+        })
     } else {
         user = new userPost({
+            authorId,
             userId,
             postId: post_Id,
             username,
