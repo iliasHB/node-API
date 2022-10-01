@@ -6,11 +6,14 @@ const userPost = require('../models/userpost');
 
 const api_userPost = async (req, res) => {
     const {userId, postId, username, postBody} = req.body;
+    //let _id = userId;
     let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
     let post_Id = Date().substring(22, 25).trim()+rd; //dateFormat("hh:mm:ss");
     //console.log(">>>>>>>>>>>>>>>>ramdom: "+rd);
     //console.log(">>>>>>>>>>>>>>>> date: "+dt);
-    let user = await Register.findOne({username});
+    //mongoose.Types.ObjectId.isValid(userId);
+    let user = await Register.find({username: username, _id:userId})
+ console.log(">>>>>>>>>>>>>>>> user: "+user);
     if (!user) {
         return res.json({
             status: "Failed",
