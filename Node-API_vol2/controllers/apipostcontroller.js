@@ -118,12 +118,12 @@ const api_allPostComments = async (req, res) => {
             message: "No post"
         })
     }
-    await postComment.find({postId: postId}).sort({ createdAt: -1 }).then((result) => {
+    await postComment.find({ postId: postId }).sort({ createdAt: -1 }).then((result) => {
         console.log(result);
         return res.json({
             status: "Sucess",
             message: "Post comment retrieved successfully",
-            data: ({'post': post, 'comment': result})
+            data: ({ 'post': post, 'comment': result })
         })
     }).catch((error) => {
         return res.status(404).json({
@@ -134,9 +134,14 @@ const api_allPostComments = async (req, res) => {
     })
 }
 
+const api_postLike = async (req, res) => {
+
+}
+
 
 module.exports = {
     api_userPost,
     api_comment,
-    api_allPostComments
+    api_allPostComments,
+    api_postLike
 }
