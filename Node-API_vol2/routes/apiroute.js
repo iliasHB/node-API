@@ -13,7 +13,7 @@ router.delete('/register/users/:id', apicontroller.api_deleteUser);
 router.get('/register/users', apicontroller.api_allUser);
 router.put('/register/users/:id', apicontroller.api_updateUserRecord);
 
-router.post('/posts/user', apipostcontroller.api_userPost);
-
+router.post('/posts/user', apipostcontroller.api_userPost); 
+router.post('/posts/comment', apipostcontroller.api_comment);
 
 module.exports = router;
