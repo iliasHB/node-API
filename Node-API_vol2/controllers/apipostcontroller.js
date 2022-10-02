@@ -108,8 +108,35 @@ const api_comment = async (req, res) => {
     }
 }
 
+const api_allPostComments = async (req, res) => {
+    const postId = req.params.id;
+
+    let post = await userPost.findOne({ _id: postId })
+    if (!post) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "No post"
+        })
+    }
+    await postComment.find({postId: postId}).sort({ createdAt: -1 }).then((result) => {
+        console.log(result);
+        return res.json({
+            status: "Sucess",
+            message: "Post comment retrieved successfully",
+            data: ({'post': post, 'comment': result})
+        })
+    }).catch((error) => {
+        return res.status(404).json({
+            status: "Failed",
+            message: "No response from the backend",
+            data: error
+        })
+    })
+}
+
 
 module.exports = {
     api_userPost,
-    api_comment
+    api_comment,
+    api_allPostComments
 }
