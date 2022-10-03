@@ -2,6 +2,7 @@ const Register = require('../models/register');
 const jwt = require('jsonwebtoken');
 const userPost = require('../models/userpost');
 const postComment = require('../models/comment');
+const postLike = require('../models/like');
 //const mongoose = require("mongoose");
 
 
@@ -135,6 +136,37 @@ const api_allPostComments = async (req, res) => {
 }
 
 const api_postLike = async (req, res) => {
+    const like = req.body;
+    const postId = req.params.id;
+
+    let post = await userPost.findOne({ _id: postId })
+    if (!post) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "No post"
+        })
+    }
+
+    let userLike = new postLike({
+        postId: postId,
+        like
+    })
+
+    if(like == ''){
+        return res.json({
+            status: 'success',
+            message: 'No like for this post'
+        })
+    } else {
+        userLike.save().then((result) => {
+            console.log(result);
+            return res.json({
+                status: 'success',
+                message: 'Post liked successfully',
+                data:''
+            })
+        })
+    }
 
 }
 
