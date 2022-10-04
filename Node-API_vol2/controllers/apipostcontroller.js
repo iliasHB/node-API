@@ -143,7 +143,7 @@ const api_postLike = async (req, res) => {
     if (!post) {
         return res.status(404).json({
             status: "Failed",
-            message: "No post"
+            message: "post does not exist"
         })
     }
 
@@ -177,3 +177,5 @@ module.exports = {
     api_allPostComments,
     api_postLike
 }
+
+
