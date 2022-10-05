@@ -3,8 +3,12 @@ const Schema = mongoose.Schema;
 
 
 const likeSchema = new Schema({
-    like:{
+    postId:{
         type: String,
+        require: true
+    },
+    like:{
+        type: Number,
         require: true
     }
 },{ timestamps: true })

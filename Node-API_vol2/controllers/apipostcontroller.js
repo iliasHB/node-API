@@ -119,13 +119,29 @@ const api_allPostComments = async (req, res) => {
             message: "No post"
         })
     }
+    let like = await postLike.find({postId: postId})
+    if (!like) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "No like"
+        })
+    }
     await postComment.find({ postId: postId }).sort({ createdAt: -1 }).then((result) => {
         console.log(result);
-        return res.json({
-            status: "Sucess",
-            message: "Post comment retrieved successfully",
-            data: ({ 'post': post, 'comment': result })
-        })
+        if(like !== ''){
+            return res.json({
+                status: "Sucess",
+                message: "Post comment retrieved successfully",
+                data: ({ 'post': post, 'comment': result, "like": like })
+            })
+        } else {
+            like = 0;
+            return res.json({
+                status: "Sucess",
+                message: "Post comment retrieved successfully",
+                data: ({ 'post': post, 'comment': result, "like": like })
+            })
+        }
     }).catch((error) => {
         return res.status(404).json({
             status: "Failed",
@@ -136,8 +152,8 @@ const api_allPostComments = async (req, res) => {
 }
 
 const api_postLike = async (req, res) => {
-    const like = req.body;
-    const postId = req.params.id;
+    const {postId, like} = req.body;
+    //const postId = req.params.id;
 
     let post = await userPost.findOne({ _id: postId })
     if (!post) {
@@ -146,9 +162,16 @@ const api_postLike = async (req, res) => {
             message: "post does not exist"
         })
     }
+    let user = await Register.findOne({_id: postId})
+    if (!user) {
+        return res.status(404).json({
+            status: "Failed",
+            message: "User does not exist!"
+        })
+    }
 
     let userLike = new postLike({
-        postId: postId,
+        postId,
         like
     })
 
@@ -163,7 +186,7 @@ const api_postLike = async (req, res) => {
             return res.json({
                 status: 'success',
                 message: 'Post liked successfully',
-                data:''
+                data: ({"like": result, "userInfo": user})
             })
         })
     }

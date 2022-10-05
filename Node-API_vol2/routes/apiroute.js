@@ -16,5 +16,6 @@ router.put('/register/users/:id', apicontroller.api_updateUserRecord);
 router.post('/posts/user', apipostcontroller.api_userPost); 
 router.post('/posts/comment', apipostcontroller.api_comment);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
+router.post('/posts/postlikes', apipostcontroller.api_postLike);
 
 module.exports = router;
