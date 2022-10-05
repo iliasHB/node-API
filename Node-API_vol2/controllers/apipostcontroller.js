@@ -152,7 +152,7 @@ const api_allPostComments = async (req, res) => {
 }
 
 const api_postLike = async (req, res) => {
-    const {postId, like} = req.body;
+    const {postId, userId, like} = req.body;
     //const postId = req.params.id;
 
     let post = await userPost.findOne({ _id: postId })
@@ -162,7 +162,7 @@ const api_postLike = async (req, res) => {
             message: "post does not exist"
         })
     }
-    let user = await Register.findOne({_id: postId})
+    let user = await Register.findOne({_id: userId})
     if (!user) {
         return res.status(404).json({
             status: "Failed",
@@ -171,6 +171,7 @@ const api_postLike = async (req, res) => {
     }
 
     let userLike = new postLike({
+        userId,
         postId,
         like
     })

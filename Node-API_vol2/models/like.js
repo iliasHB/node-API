@@ -7,6 +7,10 @@ const likeSchema = new Schema({
         type: String,
         require: true
     },
+    userId:{
+        type: String,
+        require: true
+    },
     like:{
         type: Number,
         require: true
