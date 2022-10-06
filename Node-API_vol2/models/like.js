@@ -14,7 +14,11 @@ const likeSchema = new Schema({
     like:{
         type: Number,
         require: true
-    }
+    },
+    username:{
+        type: String,
+        require: true
+    },
 },{ timestamps: true })
 
 const Like = mongoose.model('Like', likeSchema);
