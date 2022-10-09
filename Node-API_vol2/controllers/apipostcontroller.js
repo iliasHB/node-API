@@ -119,7 +119,7 @@ const api_allPostComments = async (req, res) => {
             message: "No post"
         })
     }
-    let like = await postLike.find({postId: postId})
+    let like = await postLike.find({ postId: postId })
     if (!like) {
         return res.status(404).json({
             status: "Failed",
@@ -127,21 +127,32 @@ const api_allPostComments = async (req, res) => {
         })
     }
     await postComment.find({ postId: postId }).sort({ createdAt: -1 }).then((result) => {
-        console.log(result);
-        if(like !== ''){
-            return res.json({
-                status: "Sucess",
-                message: "Post comment retrieved successfully",
-                data: ({ 'post': post, 'comment': result, "like": like })
-            })
-        } else {
-            like = 0;
-            return res.json({
-                status: "Sucess",
-                message: "Post comment retrieved successfully",
-                data: ({ 'post': post, 'comment': result, "like": like })
-            })
-        }
+        console.log(comment);
+        // if(like > 0){
+        //     for(var i = 0; i > like.length; i++){
+        //         console.log(">>>>>>>>>>>>>> post like: "+like[i])
+        //     }
+        return res.json({
+            status: "Sucess",
+            message: "Post comment retrieved successfully",
+            data: ({ 'post': post, 'comment': comment, "like": like })
+        })
+        //}
+        // if(like !== ''){
+        //     return res.json({
+        //         status: "Sucess",
+        //         message: "Post comment retrieved successfully",
+        //         data: ({ 'post': post, 'comment': comment, "like": like })
+        //     })
+        // } 
+        // else {
+        //     like = 0;
+        //     return res.json({
+        //         status: "Sucess",
+        //         message: "Post comment retrieved successfully",
+        //         data: ({ 'post': post, 'comment': comment, "like": like })
+        //     })
+        // }
     }).catch((error) => {
         return res.status(404).json({
             status: "Failed",
@@ -152,7 +163,7 @@ const api_allPostComments = async (req, res) => {
 }
 
 const api_postLike = async (req, res) => {
-    const {postId, userId, like} = req.body;
+    const { postId, userId, like } = req.body;
     //const postId = req.params.id;
 
     let post = await userPost.findOne({ _id: postId })
@@ -162,38 +173,50 @@ const api_postLike = async (req, res) => {
             message: "post does not exist"
         })
     }
-    let user = await Register.findOne({_id: userId})
+    if (post) {
+        let userLike = await postLike.findOne({ userId: userId })
+        if (userLike) {
+            return res.status(404).json({
+                status: "Failed",
+                message: "User Already like this post"
+            })
+        }
+    }
+    let user = await Register.findOne({ _id: userId })
     if (!user) {
         return res.status(404).json({
             status: "Failed",
             message: "User does not exist!"
         })
     }
+    
 
-    let userLike = new postLike({
+    userLike = new postLike({
         userId,
         postId,
+        username: user.username,
         like
     })
+    console.log(">>>>>>>>> username" + user.username);
 
-    if(like == ''){
+    if (like == 0 || like > 1) {
+        console.log(">>>>>>>>>>>>>>> like: " + like)
         return res.json({
             status: 'success',
             message: 'No like for this post'
         })
     } else {
-        userLike.save().then((result) => {
-            console.log(result);
+        userLike.save().then((like) => {
+            console.log(like);
             return res.json({
                 status: 'success',
                 message: 'Post liked successfully',
-                data: ({"like": result, "userInfo": user})
+                data: ({ "like": like, "userInfo": user })
             })
         })
     }
 
 }
-
 
 module.exports = {
     api_userPost,
