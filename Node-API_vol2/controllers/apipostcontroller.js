@@ -22,6 +22,12 @@ const api_userPost = async (req, res) => {
                     status: "Failed",
                     message: "User does not exist"
                 })
+            } else if(error){
+                return res.json({
+                    status: "Failed",
+                    message: "Server error",
+                    Error: error
+                })
             } else if (userId !== authorId) {
                 return res.json({
                     status: "Failed",
@@ -233,7 +239,7 @@ const api_allPostComments = async (req, res) => {
                 //     })
                 // }
                 console.log(">>>>>>>>>>>>>>> code here")
-                postComment.findOne({ postId: postId }).sort({ createdAt: -1 }).then((comment) => {
+                postComment.find({ postId: postId }).sort({ createdAt: -1 }).then((comment) => {
                     console.log(comment);
                     // if(like > 0){
                     //     for(var i = 0; i > like.length; i++){
@@ -335,33 +341,47 @@ const api_postLike = async (req, res) => {
                                 status: "Failed",
                                 message: "User does not exist!"
                             })
-                        } else {
-                            let userLike = new postLike({
-                                userId,
-                                postId,
-                                username: user.username,
-                                like
-                            })
-                            console.log(">>>>>>>>> username" + user.username);
-                            if (like > 1) {
-                                console.log(">>>>>>>>>>>>>>> like: " + like)
-                                return res.status(404).json({
-                                    status: 'Failed',
-                                    message: 'Duplicate like from the same user'
-                                })
-                            } else {
-                                userLike.save().then((like) => {
-                                    console.log(like);
-                                    return res.json({
-                                        status: 'success',
-                                        message: 'Post liked successfully',
-                                        data: ({ 'post':post.postBody, "like": like,})
-                                    })
-                                })
-                            }
+                        } else if(user){
+                            postLike.findOne({userId: userId},
+                                function(error, checkLike){
+                                    if(checkLike){
+                                        console.log(">>>>>>>>>>>>>>> User alerady like this post")
+                                    } 
+                                    else {
+                                        let userLike = new postLike({
+                                            userId,
+                                            postId,
+                                            username: user.username,
+                                            like
+                                        })
+                                        console.log(">>>>>>>>> username" + user.username);
+                                        // if(postId ){
+            
+                                        // }
+                                        if (like > 1) {
+                                            console.log(">>>>>>>>>>>>>>> like: " + like)
+                                            return res.status(404).json({
+                                                status: 'Failed',
+                                                message: 'Duplicate like from the same user'
+                                            })
+                                        } else {
+                                            userLike.save().then((like) => {
+                                                console.log(like);
+                                                return res.json({
+                                                    status: 'success',
+                                                    message: 'Post liked successfully',
+                                                    data: ({ 'post':post.postBody, "like": like,})
+                                                })
+                                            })
+                                        }
+                                    }
+
+                                }
+                            )
                         }
+                        
                     }
-                    )
+                )
                 
                 // console.log(">>>>>>>>>>>>>>>>> Post Exist!!!")
                 // return res.status(404).json({
