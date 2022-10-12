@@ -13,7 +13,7 @@ app.use(function (req, res, next) {
   );
   next();
 });
-const dbUri = 'mongodb://localhost:27017/selfdb';
+const dbUri = 'mongodb://localhost:27017/socialDBMS';
 async function connectDB() {
     mongoose.connect(dbUri,
         (err) => {

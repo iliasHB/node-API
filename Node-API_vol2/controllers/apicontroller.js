@@ -35,40 +35,51 @@ const api_register = async (req, res) => {
       console.log(username)
       console.log(password)
       console.log(email)
-      let user = await Register.findOne({ email })
-      if (user) {
-          return res.status(404).json({
-              status: "Failed",
-              message: "Registration Failed, email already exist",
-          })
+      try{
+        await Register.findOne({ email },
+            function(error, user){
+                if (user) {
+                    return res.status(404).json({
+                        status: "Failed",
+                        message: "Registration Failed, email already exist",
+                    })
+                } else {
+                    user = new Register({
+                        username,
+                        email,
+                        password,
+                    })
+                    var token = jwt.sign({ id: user.id }, "password")
+                    console.log(user)
+                    if (username == '' || email == '' || password == '') {
+                        return res.status(404).json({
+                            status: "Failed",
+                            message: "Registeration failed, No data supplied by the user",
+                        })
+                    } else {
+                        user.save().then(() => {
+                            return res.json({
+                                status: "sucess",
+                                message: "The registeration is successful",
+                                data: token
+                            })
+                        }).catch((error) => {
+                            return res.status(404).json({
+                                status: "Failed",
+                                message: "No response from the backend",
+                                data: error
+                            })
+                        })
+                    }
+                }
+            }
+        )
+      
+      
+      }catch(error){
+        console.log(`Message: ${error}`)
       }
-      user = new Register({
-          username,
-          email,
-          password,
-      })
-      var token = jwt.sign({ id: user.id }, "password")
-      console.log(user)
-      if (username == '' || email == '' || password == '') {
-          return res.status(404).json({
-              status: "Failed",
-              message: "Registeration failed, No data supplied by the user",
-          })
-      } else {
-          await user.save().then(() => {
-              return res.json({
-                  status: "sucess",
-                  message: "The registeration is successful",
-                  data: token
-              })
-          }).catch((error) => {
-              return res.status(404).json({
-                  status: "Failed",
-                  message: "No response from the backend",
-                  data: error
-              })
-          })
-      }
+      l
   
   }
 
@@ -92,58 +103,73 @@ const api_homepage = (req, res) => {
 ///------------ API to retrieve a Particular user record --------------
 const api_findUserById = (req, res) => {
     const id = req.params.id;
-    console.log(id);
-    Register.findById(id).then((result) => {
-        return res.json({
-            status: "Sucess",
-            message: "User found successfully",
-            data: result
+    try{
+        console.log(id);
+        Register.findById(id).then((user) => {
+            return res.json({
+                status: "Sucess",
+                message: "User found successfully",
+                data: user
+            })
+    
+        }).catch(error => {
+            console.log(error)
+            return error.status(404).json({
+                status: "Failed",
+                message: "No response from the backend",
+                data: error
+            })
         })
-
-    }).catch(error => {
-        console.log(error)
-        return error.status(404).json({
-            status: "Failed",
-            message: "No response from the backend",
-            data: error
-        })
-    })
+    }catch(error){
+        console.log(`Message: ${error}`)
+    }
+    
 }
 ///------------ API to delete a Particular user record --------------
 const api_deleteUser = (req, res) => {
     const id = req.params.id;
     console.log(id);
-    Register.findByIdAndDelete(id).then((result) => {
-        return res.json({
-            status: "Sucess",
-            message: "User deleted successfully",
-            data: result
+    try{
+        Register.findByIdAndDelete(id).then((user) => {
+            return res.json({
+                status: "Sucess",
+                message: "User deleted successfully",
+                data: user
+            })
+        }).catch((error) => {
+            console.log(error)
+            return res.status(404).json({
+                status: "Failed",
+                message: "No response from the backend",
+                data: error
+            })
         })
-    }).catch((error) => {
-        console.log(error)
-        return res.status(404).json({
-            status: "Failed",
-            message: "No response from the backend",
-            data: error
-        })
-    })
+    }catch(error){
+        console.log("Message: "+error)
+    }
+    
 }
 ///----------- List of all register user API -------------------
 const api_allUser = (req, res) => {
-    Register.find().sort({ createdAt: -1 }).then((result) => {
-        console.log(result);
-        return res.json({
-            status: "Sucess",
-            message: "Register users retrieved successfully",
-            data: result
+    try {
+        Register.find().sort({ createdAt: -1 }).then((user) => {
+            console.log(result);
+            return res.json({
+                status: "Sucess",
+                message: "Register users retrieved successfully",
+                data: user
+            })
+        }).catch((error) => {
+            return res.status(404).json({
+                status: "Failed",
+                message: "No response from the backend",
+                data: error
+            })
         })
-    }).catch((error) => {
-        return res.status(404).json({
-            status: "Failed",
-            message: "No response from the backend",
-            data: error
-        })
-    })
+    } catch (error){
+        console.log("Message: "+error)
+    }
+   
 }
 ///---------API to update user record ------------------------
 const api_updateUserRecord = async (req, res) => {
@@ -164,36 +190,34 @@ const api_updateUserRecord = async (req, res) => {
     } else {
         var decoded = jwt.verify(token, "password");
         console.log(decoded.id);
-
-        Register.findOneAndUpdate(
-            { _id: id },
-            { $set: { username: Username, email: Email, password: Password } },
-            { new: true }, (err, data) => {
-                if (err) {
-                    return res.json({
-                        status: "Failed",
-                        message: "No record found to Update"
-                    })
-                } else if (data == null) {
-                    return res.json({
-                        status: null,
-                        message: "No data"
-                    })
-                } else {
-                    console.log(data);
-                    return res.json({
-                        status: "Success",
-                        message: data
-                    })
-                   
-                }
-            })
-    
-        // return res.json({
-        //     status: "Success",
-        //     message: "Welcome to homepage",
-        //     data: []
-        // })
+        try{
+            Register.findOneAndUpdate(
+                { _id: id },
+                { $set: { username: Username, email: Email, password: Password } },
+                { new: true }, (err, data) => {
+                    if (err) {
+                        return res.json({
+                            status: "Failed",
+                            message: "No record found to Update"
+                        })
+                    } else if (data == null) {
+                        return res.json({
+                            status: null,
+                            message: "No data"
+                        })
+                    } else {
+                        console.log(data);
+                        return res.json({
+                            status: "Success",
+                            message: data
+                        })
+                       
+                    }
+                })
+        } catch(error){
+            console.log(`Message: ${error}`)
+        }
+       
     }
 
     
