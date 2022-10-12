@@ -319,10 +319,10 @@ const api_allPostComments = async (req, res) => {
     //     })
     // })
 }
-
+///------------ api_comment not working yet ------------
 const api_commentLike = async (req, res) => {
     const { commentId, userId, like, username } = req.body;
-    //const { postId, userId, like, username } = req.body;
+    console.log(">>>>>>>>>> commentId:"+commentId)
     await postComment.findOne({ _id: commentId },
         function (error, comment) {
             if (!comment) {
@@ -330,15 +330,9 @@ const api_commentLike = async (req, res) => {
                     status: "Failed",
                     message: "Comment does not exist"
                 })
-            } else if (error) {
-                return res.status(404).json({
-                    status: "Failed",
-                    message: "Server error"
-                })
-            }
-            else {
-                console.log(">>>>>>>>>>>>>>>> comment like")
-                Register.findOne({ _id: userId },
+            } else {
+                console.log(">>>>>>>>>> comment Like")
+                 Register.findOne({ _id: userId },
                     function (error, user) {
                         if (!user) {
                             return res.status(404).json({
@@ -356,7 +350,7 @@ const api_commentLike = async (req, res) => {
                                         })
                                     }
                                     else {
-                                        let comment_Like = new CommentLike({
+                                        let commentLike = new CommentLike({
                                             userId,
                                             commentId,
                                             username: user.username,
@@ -369,14 +363,8 @@ const api_commentLike = async (req, res) => {
                                                 status: 'Failed',
                                                 message: 'Duplicate like from the same user'
                                             })
-                                        } else if (like <= 0) {
-                                            return res.status(404).json({
-                                                status: 'Failed',
-                                                message: 'No like from ' + user.username
-                                            })
-                                        }
-                                        else {
-                                            comment_Like.save().then((like) => {
+                                        } else {
+                                            commentLike.save().then((like) => {
                                                 console.log(like);
                                                 return res.json({
                                                     status: 'success',
@@ -393,9 +381,11 @@ const api_commentLike = async (req, res) => {
 
                     }
                 )
+
             }
         }
     )
+
 
 }
 
@@ -418,7 +408,7 @@ const api_postLike = async (req, res) => {
                                 message: "User does not exist!"
                             })
                         } else if (user) {
-                            postLike.findOne({ userId: userId },
+                            postLike.findOne({ userId: userId,  postId: postId},
                                 function (error, checkLike) {
                                     if (checkLike) {
                                         console.log(">>>>>>>>>>>>>>> User alerady like this post")
@@ -473,12 +463,60 @@ const api_postLike = async (req, res) => {
 
 }
 
+const api_postActivity = async(req, res) => {
+const postId = req.params.id;
+
+try{
+    await userPost.findOne({_id: postId},
+        function(error, post){
+            if(!post){
+                res.status(404).json({
+                    status: "Failed",
+                    message: "User does not exist"
+                })
+            } else if (error) {
+                console.log("Message: "+error)
+            } else {
+                console.log(">>>>>>>> User exit <<<<<<<<<<<<<")
+                //Register.findOne(_id)
+                postComment.find({postId: postId}).sort({ createdAt: -1 }).then((comment) => {
+                    //let like = 
+                    postLike.find({postId: postId},
+                        function(error, like){
+                            if(!like){
+                                console.log(">>>>>>>>no postID like")
+                                return res.status(404).json({
+                                    status: "Failed",
+                                    meassage: "No post found"
+                                })
+                            } else {
+                                return res.json({
+                                    status: "Sucess",
+                                    message: "Post engagement retrieved successfully",
+                                    data: ({ 'post': post, 'comment': comment, "post_like": like })
+                                })
+                            }
+                        }
+                        )
+                    
+                })
+                
+            }
+        }
+    )
+} catch(error){
+    console.log(`Message: ${error}`)
+}
+
+}
+
 module.exports = {
     api_userPost,
     api_comment,
     api_commentLike,
     api_allPostComments,
     api_postLike,
+    api_postActivity
 }
 
 

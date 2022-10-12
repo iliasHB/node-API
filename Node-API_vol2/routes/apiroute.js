@@ -18,6 +18,7 @@ router.post('/posts/comment', apipostcontroller.api_comment);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
 router.post('/posts/commentlike', apipostcontroller.api_commentLike);
 router.post('/posts/postlikes', apipostcontroller.api_postLike); 
+router.get('/posts/postactivity/:id', apipostcontroller.api_postActivity); 
 
 
 module.exports = router;
