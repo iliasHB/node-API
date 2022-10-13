@@ -111,6 +111,7 @@ const api_deletePost = async (req, res) => {
                                             })
                                         } else {
                                             console.log(">>>>>>>> post comment exist <<<<<<<<<<<<<")
+                                            //>>>>>>>>>>>>>>> comment not deleting <<<<<<<<<<<<<<<<<<
                                             commentLike.find({ commentId: commentId }, function (error, cLike) {
                                                 if (!cLike) {
                                                     return res.status(404).json({
