@@ -79,10 +79,8 @@ const api_userPost = async (req, res) => {
 
 const api_deletePost = async (req, res) => {
     const postId = req.params.id;
-    const commentId = req.body;
-
     try {
-        await userPost.findOneAndDelete({ _id: postId },
+        userPost.findOneAndDelete({ _id: postId },
             function (error, post) {
                 if (!post) {
                     res.status(404).json({
@@ -96,53 +94,95 @@ const api_deletePost = async (req, res) => {
                     postLike.deleteMany({ postId: postId },
                         function (error, like) {
                             if (!like) {
-                                return res.status(404).json({
-                                    status: "Failed",
-                                    meassage: "No post found"
-                                })
-                            } else {
-                                console.log(">>>>>>>> post Like exist <<<<<<<<<<<<<")
                                 postComment.deleteMany({ postId: postId },
                                     function (error, comment) {
                                         if (!comment) {
-                                            return res.status(404).json({
-                                                status: "Failed",
-                                                meassage: "No post to delete"
+                                            return res.json({
+                                                status: "Success",
+                                                meassage: "Post deleted successfully",
+                                                data:  post.postBody,           
                                             })
                                         } else {
-                                            console.log(">>>>>>>> post comment exist <<<<<<<<<<<<<")
-                                            //>>>>>>>>>>>>>>> comment not deleting <<<<<<<<<<<<<<<<<<
-                                            commentLike.find({ commentId: commentId }, function (error, cLike) {
-                                                if (!cLike) {
-                                                    return res.status(404).json({
+                                            console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
+                                            commentLike.deleteMany({ postId: postId }, function (error, cmLike) {
+                                                if (!cmLike) {
+                                                    console.log(">>>>>>>>no postID like")
+                                                    return res.json({
                                                         status: "Failed",
-                                                        meassage: "No comment like found"
+                                                        meassage: "No comment like not deleted",
+                                                        data: ({
+                                                            "post": post.postBody,
+                                                            "comment": comment.deletedCount + " comments deleted",
+                                                        })
                                                     })
                                                 } else {
-                                                    console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
-                                                    commentLike.deleteMany({ commentId: commentId }, function (error, cmLike) {
-                                                        if (!cmLike) {
-                                                            console.log(">>>>>>>>no postID like")
-                                                            return res.status(404).json({
-                                                                status: "Failed",
-                                                                meassage: "No comment like not deleted"
-                                                            })
-                                                        } else {
-                                                            console.log(">>>>>>>> All post activities deleted !!!! <<<<<<<<<<<")
-                                                            return res.status(404).json({
-                                                                status: "Failed",
-                                                                meassage: "Post deleted successfully",
-                                                                data: ({
-                                                                    "post": "deleted " + post.deletedCount + " post",
-                                                                    "post_like": "deleted " + like.deletedCount + " post likes",
-                                                                    "comment": "deleted " + comment.deletedCount + " comments",
-                                                                    "comment_like": "deleted " + cmLike.deletedCount + " comment likes"
-                                                                })
-                                                            })
-                                                        }
+                                                    console.log(">>>>>>>> All post activities deleted !!!! <<<<<<<<<<<")
+                                                    return res.json({
+                                                        status: "Failed",
+                                                        meassage: "Post deleted successfully",
+                                                        data: ({
+                                                            "post": post.postBody,
+                                                            "comment": comment.deletedCount + " comments deleted",
+                                                            "comment_like": cmLike.deletedCount + " comment likes deleted"
+                                                        })
                                                     })
                                                 }
                                             })
+
+                                        }
+                                    })
+                            } else {
+                                console.log(">>>>>>>> post comment exist <<<<<<<<<<<<<")
+                                postComment.deleteMany({ postId: postId },
+                                    function (error, comment) {
+                                        if (!comment) {
+                                            return res.json({
+                                                status: "Success",
+                                                meassage: "Post deleted successfully",
+                                                data: ({
+                                                    "post": post.postBody,
+                                                    "post_like": like.deletedCount + " post likes deleted",
+                                                })
+                                            })
+                                        } else {
+                                            //console.log(">>>>>>>> coment like exist <<<<<<<<<<<<<")
+                                            //>>>>>>>>>>>>>>> comment not deleting <<<<<<<<<<<<<<<<<<
+                                            // commentLike.find({ commentId: commentId }, function (error, cLike) {
+                                            //     if (!cLike) {
+                                            //         return res.status(404).json({
+                                            //             status: "Failed",
+                                            //             meassage: "No comment like found"
+                                            //         })
+                                            //     } else {
+                                            console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
+                                            commentLike.deleteMany({ postId: postId }, function (error, cmLike) {
+                                                if (!cmLike) {
+                                                    console.log(">>>>>>>> No commentID like")
+                                                    return res.json({
+                                                        status: "Failed",
+                                                        meassage: "No comment like not deleted",
+                                                        data: ({
+                                                            "post": post.postBody,
+                                                            "post_like": like.deletedCount + " post likes deleted",
+                                                            "comment": comment.deletedCount + " comments deleted",
+                                                        })
+                                                    })
+                                                } else {
+                                                    console.log(">>>>>>>> All post activities deleted !!! <<<<<<<<<<<")
+                                                    return res.json({
+                                                        status: "Failed",
+                                                        meassage: "Post deleted successfully",
+                                                        data: ({
+                                                            "post": post.postBody,
+                                                            "post_like": like.deletedCount + " post likes deleted",
+                                                            "comment": comment.deletedCount + " comments deleted",
+                                                            "comment_like": cmLike.deletedCount + " comment likes deleted"
+                                                        })
+                                                    })
+                                                }
+                                            })
+                                            //}
+                                            //})
 
                                         }
                                     }
@@ -159,6 +199,8 @@ const api_deletePost = async (req, res) => {
     }
 
 }
+
+
 // const api_deletePost = (req, res) => {
 //     const id = req.params.id;
 //     console.log(id);
@@ -296,7 +338,7 @@ const api_allPostComments = async (req, res) => {
 }
 
 const api_commentLike = async (req, res) => {
-    const { userId, commentId, like, username } = req.body;
+    const { userId, commentId, like, username, postId } = req.body;
     try {
         await Register.findOne({ _id: userId },
             function (error, user) {
@@ -328,6 +370,7 @@ const api_commentLike = async (req, res) => {
                                             let comment_Like = new commentLike({
                                                 userId,
                                                 commentId,
+                                                postId,
                                                 username: user.username,
                                                 like
                                             })
@@ -559,3 +602,59 @@ module.exports = {
 //         }
 //     });
 // });
+
+///
+
+// function deletePostLike(postId){
+//     postLike.deleteMany({ postId: postId },
+//         function (error, like) {
+//             if (!like) {
+//                 deletePostComment(postId)
+//             } else {
+//                 console.log(">>>>>>>> post comment exist <<<<<<<<<<<<<")
+//                 deletePostComment(postId)
+//             }
+//         }
+//     )
+// }
+
+// function deletePostComment(postId){
+//     postComment.deleteMany({ postId: postId },
+//         function (error, comment) {
+//             if (!comment) {
+//                 return res.json({
+//                     status: "Success",
+//                     meassage: "Post deleted successfully",
+//                     data:  post.postBody,           
+//                 })
+//             } else {
+//                 console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
+//                 commentLike.deleteMany({ postId: postId }, function (error, cmLike) {
+//                     if (!cmLike) {
+//                         console.log(">>>>>>>>no postID like")
+//                         return res.json({
+//                             status: "Failed",
+//                             meassage: "No comment like not deleted",
+//                             data: ({
+//                                 "post": post.postBody,
+//                                 "post_like": like.deletedCount + " post likes deleted",
+//                                 "comment": comment.deletedCount + " comments deleted",
+//                             })
+//                         })
+//                     } else {
+//                         console.log(">>>>>>>> All post activities deleted !!!! <<<<<<<<<<<")
+//                         return res.json({
+//                             status: "Failed",
+//                             meassage: "Post deleted successfully",
+//                             data: ({
+//                                 "post": post.postBody,
+//                                 "comment": comment.deletedCount + " comments deleted",
+//                                 "comment_like": cmLike.deletedCount + " comment likes deleted"
+//                             })
+//                         })
+//                     }
+//                 })
+//             }
+//         }
+//     )
+// }

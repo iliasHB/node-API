@@ -8,6 +8,10 @@ const commentlikeSchema = new Schema({
         type: String,
         require: true
     },
+    postId:{
+        type: String,
+        require: true
+    },
     userId:{
         type: String,
         require: true
