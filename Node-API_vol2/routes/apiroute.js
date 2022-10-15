@@ -14,6 +14,7 @@ router.get('/register/users', apicontroller.api_allUser);
 router.put('/register/users/:id', apicontroller.api_updateUserRecord);
 
 router.post('/posts/user', apipostcontroller.api_userPost); 
+router.delete('/posts/delcomment', apipostcontroller.api_deleteComment);
 router.delete('/posts/:id', apipostcontroller.api_deletePost);
 router.post('/posts/comment', apipostcontroller.api_comment);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
