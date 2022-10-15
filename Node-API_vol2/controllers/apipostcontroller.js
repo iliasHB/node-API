@@ -76,6 +76,7 @@ const api_userPost = async (req, res) => {
     }
 
 }
+
 const api_postLike = async (req, res) => {
     const { postId, userId, like, username } = req.body;
     try {
@@ -148,6 +149,8 @@ const api_postLike = async (req, res) => {
         console.log(`Message: ${error}`)
     }
 }
+
+const api_deletePostLike = async (req, res) => {}
 
 const api_deletePost = async (req, res) => {
     const postId = req.params.id;
@@ -585,6 +588,7 @@ module.exports = {
     api_commentLike,
     api_allPostComments,
     api_postLike,
+    api_deletePostLike,
     api_postActivity
 }
 
