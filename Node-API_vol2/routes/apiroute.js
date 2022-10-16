@@ -19,7 +19,7 @@ router.delete('/posts/delcomment', apipostcontroller.api_deleteComment);
 router.post('/posts/comment', apipostcontroller.api_comment);
 router.post('/posts/commentlike', apipostcontroller.api_commentLike);
 router.post('/posts/postlikes', apipostcontroller.api_postLike); 
-router.delete('/posts/delpostlikes', apipostcontroller.api_deletePostLike); 
+router.delete('/posts/delpostlike', apipostcontroller.api_deletePostLike); 
 router.delete('/posts/:id', apipostcontroller.api_deletePost);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
 router.get('/posts/postactivity/:id', apipostcontroller.api_postActivity); 

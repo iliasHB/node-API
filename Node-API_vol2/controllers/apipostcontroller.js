@@ -5,6 +5,7 @@ const postComment = require('../models/comment');
 const postLike = require('../models/like');
 const commentLike = require('../models/comment_like');
 const comment = require('../models/comment');
+const { findOneAndDelete } = require('../models/register');
 
 
 
@@ -15,20 +16,12 @@ const api_userPost = async (req, res) => {
     let post_Id = Date().substring(22, 25).trim() + rd; //dateFormat("hh:mm:ss");
 
     try {
-        await Register.findOne({ _id: userId },
-            function (error, user) {
-                console.log(">>>>>>>>>>>> Username: " + user.username);
+        await Register.findOne({ _id: userId }).then((err, user) => {
+            console.log(">>>>>>>>>>>> Username: " + user.username);
                 if (!user) {
                     return res.json({
                         status: "Failed",
                         message: "User does not exist"
-                    })
-                }
-                else if (error) {
-                    return res.json({
-                        status: "Failed",
-                        message: "Server error",
-                        Error: error
                     })
                 }
                 else if (userId !== authorId) {
@@ -69,8 +62,13 @@ const api_userPost = async (req, res) => {
                         })
                     }
                 }
-            }
-        )
+        }).catch((err) => {
+            return res.json({
+                status: "Failed",
+                message: "Server error",
+                Error: err
+            })
+        })
     } catch (error) {
         console.log("Message: " + error)
     }
@@ -150,7 +148,28 @@ const api_postLike = async (req, res) => {
     }
 }
 
-const api_deletePostLike = async (req, res) => {}
+const api_deletePostLike = async (req, res) => {
+    const {userId, postId} = req.body;
+    await postLike.findOneAndDelete({userId: userId, postId: postId}).then((like) => {
+        if(!like){
+            return res.status(404).json({
+                status: "Failed",
+                message: "No post like exist",
+            })
+        }else {
+            return res.json({
+                status: "Failed",
+                message: "Post unlike successfully",
+            }) 
+        }
+    }).catch((error) => {
+        return res.status(500).json({
+            status: "Failed",
+            message: `No response from the backend: ${error}`,
+        })
+    }) 
+ 
+}
 
 const api_deletePost = async (req, res) => {
     const postId = req.params.id;
@@ -220,15 +239,7 @@ const api_deletePost = async (req, res) => {
                                                 })
                                             })
                                         } else {
-                                            //console.log(">>>>>>>> coment like exist <<<<<<<<<<<<<")
-                                            //>>>>>>>>>>>>>>> comment not deleting <<<<<<<<<<<<<<<<<<
-                                            // commentLike.find({ commentId: commentId }, function (error, cLike) {
-                                            //     if (!cLike) {
-                                            //         return res.status(404).json({
-                                            //             status: "Failed",
-                                            //             meassage: "No comment like found"
-                                            //         })
-                                            //     } else {
+                                            
                                             console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
                                             commentLike.deleteMany({ postId: postId }, function (error, cmLike) {
                                                 if (!cmLike) {
@@ -414,6 +425,28 @@ const api_commentLike = async (req, res) => {
 
 }
 
+const api_delCommentLike = async (req, res) => {
+    const {userId, commentId} = req.body;
+    await commentLike.findOneAndDelete({userId: userId, commentId: commentId}).then((like) => {
+        if(!like){
+            return res.status(404).json({
+                status: "Failed",
+                message: "No comment like exist",
+            })
+        }else {
+            return res.json({
+                status: "Failed",
+                message: "comment unlike successfully",
+            }) 
+        }
+    }).catch((error) => {
+        return res.status(500).json({
+            status: "Failed",
+            message: `No response from the backend: ${error}`,
+        })
+    })
+}
+
 const api_deleteComment = (req, res) => {
     //const commentId = req.params.id;
    const {commentId, userId} = req.body;
@@ -586,6 +619,7 @@ module.exports = {
     api_deleteComment,
     api_comment,
     api_commentLike,
+    api_delCommentLike,
     api_allPostComments,
     api_postLike,
     api_deletePostLike,
