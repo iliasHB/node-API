@@ -5,7 +5,6 @@ const postComment = require('../models/comment');
 const postLike = require('../models/like');
 const commentLike = require('../models/comment_like');
 const comment = require('../models/comment');
-const { findOneAndDelete } = require('../models/register');
 
 
 
