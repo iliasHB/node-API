@@ -13,23 +13,24 @@ app.use(function (req, res, next) {
   );
   next();
 });
-console.log(`Server port: ${process.env.PORT}`);
+
+const PORT = process.env.PORT;
 const dbUri = process.env.DATABASE_CONNECTION_URL;
 async function connectDB() {
-    mongoose.connect(dbUri,
-        (err) => {
-            if (err) {
-                console.log(">>>>> database connection Failed: " + err)
-            } else {
-                console.log(">>>>>> Successfully connected to database !!!")
-                const server = app.listen(process.env.PORT, () => {
-                      const { port } = server.address();
-                      console.log(`>>>>>> Server running on PORT: ${port}`);
-                    })
-            }
-        },
-        { useNewUrlParser: true, useUnifiedTopology: true }
-    )
+  mongoose.connect(dbUri,
+    (err) => {
+      if (err) {
+        console.log(">>>>> Database Connection Failed: " + err)
+      } else {
+        console.log(">>>>>> Successfully connected to database !!!")
+        const server = app.listen(PORT, () => {
+          const { port } = server.address();
+          console.log(`>>>>>> Server running on PORT: ${port}`);
+        })
+      }
+    },
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
 }
 
 connectDB()
