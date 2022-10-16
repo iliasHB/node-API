@@ -425,7 +425,7 @@ const api_commentLike = async (req, res) => {
 
 }
 
-const api_delCommentLike = async (req, res) => {
+const api_deleteCommentLike = async (req, res) => {
     const {userId, commentId} = req.body;
     await commentLike.findOneAndDelete({userId: userId, commentId: commentId}).then((like) => {
         if(!like){
@@ -619,7 +619,7 @@ module.exports = {
     api_deleteComment,
     api_comment,
     api_commentLike,
-    api_delCommentLike,
+    api_deleteCommentLike,
     api_allPostComments,
     api_postLike,
     api_deletePostLike,
