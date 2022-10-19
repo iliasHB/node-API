@@ -1,0 +1,17 @@
+version: '3'
+services: 
+  app:
+    container_name: social-network-API
+    restart: always
+    build: .
+    ports:
+      - '8080:5000'
+    links:
+      - mongo
+  mongo:
+    container_name: mongodb-socialDBMS
+    image: mongo
+    ports:
+      - '27017:27017'
+
+#docker-compose up
