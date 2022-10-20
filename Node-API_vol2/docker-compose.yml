@@ -1,8 +1,13 @@
 version: '3'
 services: 
   app:
-    container_name: social-network-API
+    container_name: Node-Express-API
     restart: always
+    environment:
+      - PORT=5000
+      - URL=http://localhost
+      - MONGO_URL=mongodb://mongo:27017
+      - DB_NAME=socialDBMS
     build: .
     ports:
       - '8080:5000'
@@ -13,5 +18,19 @@ services:
     image: mongo
     ports:
       - '27017:27017'
+    
+   
 
+#container_name: social-network-API
+#container_name: mongodb-socialDBMS
+# links:
+      #- mongodb
 #docker-compose up
+#docker-compose build
+#docker run --name NAME_OF_DATABASE_CONTAINER -d -p 27017:27017 mongo
+
+ #environment:
+      #- PORT=5000
+      #- URL=http://localhost
+      #- MONGO_URL=mongodb://mongo:27017
+      #- DB_NAME=socialDBMS
