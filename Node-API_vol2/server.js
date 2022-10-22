@@ -48,8 +48,8 @@ app.use('/webservice', apiroute);
 // db.registers.insertOne({username: "SODIQ", email:"sodQgmail.com", password:"232222"}) -> this insert document in a collection
 // db.registers.insertMany(
         // [
-          // {username: "SODIQ", email:"sodQgmail.com", password:"232222"}, 
-          // {username: "SODIQ", email:"sodQgmail.com", password:"232222"}
+          // {username: "SODIQ", email:"sodiqQgmail.com", password:"232222"}, 
+          // {username: "SOD", email:"sodQgmail.com", password:"2109807"}
         // ]
       // ) -> this insert documents in a collection
 
