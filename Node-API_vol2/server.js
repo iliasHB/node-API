@@ -38,6 +38,15 @@ app.use(express.json({ extended: false }));
 app.use('/webservice', apiroute);
 
 
+///----------- mongodb basic command --------------
+// mongosh -> to enter mongo CLI
+// show databases -> list all database
+// use socialDBMS -> switch to social to socialDBMS. Note yours may be different
+// show collections or show tables -> list of all collections created
+// db.getCollection(registers).find() -> retrieve all user in register collection
+
+
+
 ///------------ CSP API --------------------------
 // const express = require('express');
 // const bodyParser = require('body-parser');
