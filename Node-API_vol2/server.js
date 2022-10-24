@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const apiroute = require('./routes/apiroute.js');
 
-const app = express();
+const service = express();
 //console.log(process.env) // remove this after you've confirmed it is working
 app.use(function (req, res, next) {
   res.setHeader(
@@ -34,8 +34,8 @@ async function connectDB() {
 }
 
 connectDB()
-app.use(express.json({ extended: false }));
-app.use('/webservice', apiroute);
+service.use(express.json({ extended: false }));
+service.use('/webservice', apiroute);
 
 
 ///----------- mongodb basic command --------------
@@ -54,6 +54,8 @@ app.use('/webservice', apiroute);
       // ) -> this insert documents in a collection
 
 
+
+      
 ///------------ CSP API --------------------------
 // const express = require('express');
 // const bodyParser = require('body-parser');
