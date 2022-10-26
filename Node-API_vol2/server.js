@@ -1,19 +1,13 @@
 const express = require("express")
+const helmet = require("helmet");
 const mongoose = require("mongoose")
 require('dotenv').config()
 
 const apiroute = require('./routes/apiroute.js');
 
 const service = express();
-//console.log(process.env) // remove this after you've confirmed it is working
-app.use(function (req, res, next) {
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; frame-src 'self'"
-  );
-  next();
-});
 
+service.use(helmet())
 const PORT = process.env.PORT;
 const dbUri = process.env.DATABASE_CONNECTION_URL;
 async function connectDB() {
@@ -23,7 +17,7 @@ async function connectDB() {
         console.log(">>>>> Database Connection Failed: " + err)
       } else {
         console.log(">>>>>> Successfully connected to database !!!")
-        const server = app.listen(PORT, () => {
+        const server = service.listen(PORT, () => {
           const { port } = server.address();
           console.log(`>>>>>> Server running on PORT: ${port}`);
         })
@@ -56,32 +50,20 @@ service.use('/webservice', apiroute);
 
 
       
-///------------ CSP API --------------------------
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const path = require('path');
-// const app = express();
-
-// app.use(function (req, res, next) {
-//   res.setHeader(
-//     'Content-Security-Policy',
-//     "default-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; frame-src 'self'"
-//   );
-//   next();
-// });
-
-// app.use(bodyParser.json());
-// app.use(express.static(path.join(__dirname)));
-
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/index.html'));
-// });
-
-// const server = app.listen(process.env.PORT || 5500, () => {
-//   const { port } = server.address();
-//   console.log(`Server running on PORT ${port}`);
-// });
-
+///------------ default security helmet --------------------------
+// Content-Security-Policy: default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests
+// Cross-Origin-Embedder-Policy: require-corp
+// Cross-Origin-Opener-Policy: same-origin
+// Cross-Origin-Resource-Policy: same-origin
+// Origin-Agent-Cluster: ?1
+// Referrer-Policy: no-referrer
+// Strict-Transport-Security: max-age=15552000; includeSubDomains
+// X-Content-Type-Options: nosniff
+// X-DNS-Prefetch-Control: off
+// X-Download-Options: noopen
+// X-Frame-Options: SAMEORIGIN
+// X-Permitted-Cross-Domain-Policies: none
+// X-XSS-Protection: 0
 
 
 
