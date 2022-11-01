@@ -9,69 +9,63 @@ const comment = require('../models/comment');
 
 
 const api_userPost = async (req, res) => {
-    const { userId, authorId, postBody, username } = req.body;
+    const { userId, authorId, postBody} = req.body;
 
     let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
     let post_Id = Date().substring(22, 25).trim() + rd; //dateFormat("hh:mm:ss");
-
+    console.log(">>>>>>>>>>>>>>>>> user ready to post <<<<<<<<<<<<<<<<<<<<<,")
+    console.log(">>>>>>>>>>>> userId: " +userId );
     try {
-        await Register.findOne({ _id: userId }).then((err, user) => {
-            console.log(">>>>>>>>>>>> Username: " + user.username);
-                if (!user) {
-                    return res.json({
+        await Register.findOne({ _id: userId }, function (err, user){
+            console.log(">>>>>>>>>>>> Username: " + user);
+            if (!user) {
+                return res.json({
+                    status: "Failed",
+                    message: "User does not exist"
+                })
+            }
+            else if (userId !== authorId) {
+                return res.json({
+                    status: "Failed",
+                    message: "You don't have permission to post"
+                })
+            } else {
+                console.log(">>>>>>>>>>>> Username: " + user.username);
+                let post = new userPost({
+                    authorId, //new mongoose.Types.ObjectId(),
+                    userId, //new mongoose.Types.ObjectId(),
+                    username: user.username,
+                    postId: post_Id,
+                    postBody
+                })
+                //var token = jwt.sign({ id: user.id }, "password")
+                if (userId == '' || postBody == '' || authorId == '') {
+                    return res.status(404).json({
                         status: "Failed",
-                        message: "User does not exist"
-                    })
-                }
-                else if (userId !== authorId) {
-                    return res.json({
-                        status: "Failed",
-                        message: "You don't have permission to post"
+                        message: "User post failed, No data supplied by the user",
                     })
                 } else {
                     console.log(">>>>>>>>>>>> Username: " + user.username);
-                    let post = new userPost({
-                        authorId, //new mongoose.Types.ObjectId(),
-                        userId, //new mongoose.Types.ObjectId(),
-                        username: user.username,
-                        postId: post_Id,
-                        postBody
-                    })
-                    //var token = jwt.sign({ id: user.id }, "password")
-                    if (userId == '' || postBody == '' || authorId == '') {
+                    post.save().then((result) => {
+                        console.log(">>>>>>>>>>>> name of user: " + user.username);
+                        return res.json({
+                            status: "sucess",
+                            message: "The Post is successful",
+                            data: result
+                        })
+                    }).catch((error) => {
                         return res.status(404).json({
                             status: "Failed",
-                            message: "User post failed, No data supplied by the user",
+                            message: "No response from the backend",
+                            data: error
                         })
-                    } else {
-                        console.log(">>>>>>>>>>>> Username: " + user.username);
-                        post.save().then((result) => {
-                            console.log(">>>>>>>>>>>> Username: " + user.username);
-                            return res.json({
-                                status: "sucess",
-                                message: "The Post is successful",
-                                data: result
-                            })
-                        }).catch((error) => {
-                            return res.status(404).json({
-                                status: "Failed",
-                                message: "No response from the backend",
-                                data: error
-                            })
-                        })
-                    }
+                    })
                 }
-        }).catch((err) => {
-            return res.json({
-                status: "Failed",
-                message: "Server error",
-                Error: err
-            })
+            }
         })
     } catch (error) {
         console.log("Message: " + error)
     }
-
 }
 
 const api_postLike = async (req, res) => {
@@ -350,7 +344,7 @@ const api_comment = async (req, res) => {
 }
 
 const api_commentLike = async (req, res) => {
-    const { userId, commentId, like, username, postId } = req.body;
+    const { userId, commentId, like, postId } = req.body;
     try {
         await Register.findOne({ _id: userId },
             function (error, user) {
@@ -426,24 +420,31 @@ const api_commentLike = async (req, res) => {
 
 const api_deleteCommentLike = async (req, res) => {
     const {userId, commentId} = req.body;
-    await commentLike.findOneAndDelete({userId: userId, commentId: commentId}).then((like) => {
-        if(!like){
-            return res.status(404).json({
+    console.log(">>>>>>>>>>>>>>>> userId: "+userId)
+    console.log(">>>>>>>>>>>>>>>> commentId: "+commentId)
+    try{
+        await commentLike.findOneAndDelete({userId: userId, commentId: commentId}).then((like) => {
+            if(!like){
+                return res.status(404).json({
+                    status: "Failed",
+                    message: "No comment like exist",
+                })
+            } else {
+                return res.json({
+                    status: "Failed",
+                    message: "comment unlike successfully",
+                }) 
+            }
+        }).catch((error) => {
+            return res.status(500).json({
                 status: "Failed",
-                message: "No comment like exist",
+                message: `No response from the backend: ${error}`,
             })
-        }else {
-            return res.json({
-                status: "Failed",
-                message: "comment unlike successfully",
-            }) 
-        }
-    }).catch((error) => {
-        return res.status(500).json({
-            status: "Failed",
-            message: `No response from the backend: ${error}`,
         })
-    })
+    } catch (error) {
+        console.log("Message: " + error)
+    }
+    
 }
 
 const api_deleteComment = (req, res) => {
@@ -459,7 +460,7 @@ const api_deleteComment = (req, res) => {
                 })
             } else {
                 console.log(">>>>>>>> comment Like exist <<<<<<<<<<<<<")
-                commentLike.deleteMany({ commentId: commentId, userId: userId }, function (error, cmLike) {
+                commentLike.deleteMany({ commentId: commentId}, function (error, cmLike) {
                     if (!cmLike) {
                         console.log(">>>>>>>> No commentID like")
                         return res.json({

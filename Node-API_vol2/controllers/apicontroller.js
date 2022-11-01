@@ -1,43 +1,53 @@
 const Register = require('../models/register');
 const jwt = require('jsonwebtoken');
 
+
 const api_login = async (req, res) => {
     const { email, password } = req.body
-    let user = await Register.find({ email, username })
-
-    console.log(user)
-    if (!user) {
-        return res.status(404).json({
-            status: "Failed",
-            message: "User does not exist",
+    try{
+        await Register.findOne({ email: email, password: password }, function(error, user){
+            console.log(">>>>>>>>>>"+user.email)
+            console.log(">>>>>>>>>>"+user.password)
+            if (!user) {
+                return res.status(404).json({
+                    status: "Failed",
+                    message: "User does not exist",
+                })
+            } else if (user.password != password) {
+                return res.status(404).json({
+                    status: "Failed",
+                    message: "Password is Incorrect",
+                })
+            } else if(!user.password){
+                console.log("wrong password")
+            } else {
+                var token = jwt.sign({ id: user.id }, "password")
+                return res.json({
+                    status: "Sucess",
+                    message: "Login successful",
+                    token: token,
+                    data: user
+                })
+            }
         })
-    } else if (user.password !== password) {
-        return res.status(404).json({
-            status: "Failed",
-            message: "Password is Incorrect",
-        })
-    } else {
-        var token = jwt.sign({ id: user.id }, "password")
-        return res.json({
-            status: "Sucess",
-            message: "Login successful",
-            token: token,
-            data: user
-        })
+        
+    } catch(error){
+    console.log(`Error: ${error}`)
     }
+
 }
 
 
 ///------------ Register User API --------------------------
 const api_register = async (req, res) => {
-      //var token = jwt.sign({ id: user.id }, "password")
-      const { username, email, password } = req.body
-      console.log(username)
-      console.log(password)
-      console.log(email)
-      try{
+    //var token = jwt.sign({ id: user.id }, "password")
+    const { username, email, password } = req.body
+    console.log(username)
+    console.log(password)
+    console.log(email)
+    try {
         await Register.findOne({ email },
-            function(error, user){
+            function (error, user) {
                 if (user) {
                     return res.status(404).json({
                         status: "Failed",
@@ -57,11 +67,12 @@ const api_register = async (req, res) => {
                             message: "Registeration failed, No data supplied by the user",
                         })
                     } else {
-                        user.save().then(() => {
+                        user.save().then((result) => {
                             return res.json({
                                 status: "sucess",
                                 message: "The registeration is successful",
-                                data: token
+                                token: token,
+                                data: result
                             })
                         }).catch((error) => {
                             return res.status(404).json({
@@ -74,18 +85,18 @@ const api_register = async (req, res) => {
                 }
             }
         )
-      
-      
-      }catch(error){
+
+
+    } catch (error) {
         console.log(`Message: ${error}`)
-      }
-      l
-  
-  }
+    }
+    l
+
+}
 
 const api_homepage = (req, res) => {
     let token = req.header("token");
-    if(!token) {
+    if (!token) {
         return res.status(404).json({
             status: "Failed",
             message: "You don't have access to this page",
@@ -103,7 +114,7 @@ const api_homepage = (req, res) => {
 ///------------ API to retrieve a Particular user record --------------
 const api_findUserById = (req, res) => {
     const id = req.params.id;
-    try{
+    try {
         console.log(id);
         Register.findById(id).then((user) => {
             return res.json({
@@ -111,7 +122,7 @@ const api_findUserById = (req, res) => {
                 message: "User found successfully",
                 data: user
             })
-    
+
         }).catch(error => {
             console.log(error)
             return error.status(404).json({
@@ -120,16 +131,16 @@ const api_findUserById = (req, res) => {
                 data: error
             })
         })
-    }catch(error){
+    } catch (error) {
         console.log(`Message: ${error}`)
     }
-    
+
 }
 ///------------ API to delete a Particular user record --------------
 const api_deleteUser = (req, res) => {
     const id = req.params.id;
     console.log(id);
-    try{
+    try {
         Register.findByIdAndDelete(id).then((user) => {
             return res.json({
                 status: "Sucess",
@@ -144,16 +155,16 @@ const api_deleteUser = (req, res) => {
                 data: error
             })
         })
-    }catch(error){
-        console.log("Message: "+error)
+    } catch (error) {
+        console.log("Message: " + error)
     }
-    
+
 }
 ///----------- List of all register user API -------------------
 const api_allUser = (req, res) => {
     try {
         Register.find().sort({ createdAt: -1 }).then((user) => {
-            console.log(result);
+            console.log(user);
             return res.json({
                 status: "Sucess",
                 message: "Register users retrieved successfully",
@@ -166,10 +177,10 @@ const api_allUser = (req, res) => {
                 data: error
             })
         })
-    } catch (error){
-        console.log("Message: "+error)
+    } catch (error) {
+        console.log("Message: " + error)
     }
-   
+
 }
 ///---------API to update user record ------------------------
 const api_updateUserRecord = async (req, res) => {
@@ -182,7 +193,7 @@ const api_updateUserRecord = async (req, res) => {
 
     console.log(">>>>>>>>>> id: " + id)
 
-    if(!token) {
+    if (!token) {
         return res.status(404).json({
             status: "Failed",
             message: "You don't have access to edit a record",
@@ -190,37 +201,45 @@ const api_updateUserRecord = async (req, res) => {
     } else {
         var decoded = jwt.verify(token, "password");
         console.log(decoded.id);
-        try{
-            Register.findOneAndUpdate(
-                { _id: id },
-                { $set: { username: Username, email: Email, password: Password } },
-                { new: true }, (err, data) => {
-                    if (err) {
-                        return res.json({
-                            status: "Failed",
-                            message: "No record found to Update"
-                        })
-                    } else if (data == null) {
-                        return res.json({
-                            status: null,
-                            message: "No data"
-                        })
-                    } else {
-                        console.log(data);
-                        return res.json({
-                            status: "Success",
-                            message: data
-                        })
-                       
-                    }
+        try {
+            if (decoded){
+                Register.findOneAndUpdate(
+                    { _id: id },
+                    { $set: { username: Username, email: Email, password: Password } },
+                    { new: true }, (err, data) => {
+                        if (err) {
+                            return res.json({
+                                status: "Failed",
+                                message: "No record found to Update"
+                            })
+                        } else if (data == null) {
+                            return res.json({
+                                status: null,
+                                message: "No data"
+                            })
+                        } else {
+                            console.log(data);
+                            return res.json({
+                                status: "Success",
+                                message: data
+                            })
+    
+                        }
+                    })
+            } else {
+                res.status().json({
+                    status: "Failed",
+                    message: "Unable to decode access token"
                 })
-        } catch(error){
+            }
+           
+        } catch (error) {
             console.log(`Message: ${error}`)
         }
-       
+
     }
 
-    
+
 }
 
 
