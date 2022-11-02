@@ -46,7 +46,7 @@ service.use('/webservice', apiroute);
           // {username: "SODIQ", email:"sodiqQgmail.com", password:"232222"}, 
           // {username: "SOD", email:"sodQgmail.com", password:"2109807"}
         // ]
-      // ) -> this insert documents in a collection
+      // ) -> this insert documents in many collection
 
 
 

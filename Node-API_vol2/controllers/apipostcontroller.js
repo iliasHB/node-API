@@ -1,5 +1,6 @@
 const Register = require('../models/register');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer')
 const userPost = require('../models/userpost');
 const postComment = require('../models/comment');
 const postLike = require('../models/like');

@@ -1,13 +1,14 @@
 const Register = require('../models/register');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 
 const api_login = async (req, res) => {
     const { email, password } = req.body
-    try{
-        await Register.findOne({ email: email, password: password }, function(error, user){
-            console.log(">>>>>>>>>>"+user.email)
-            console.log(">>>>>>>>>>"+user.password)
+    try {
+        await Register.findOne({ email: email, password: password }, function (error, user) {
+            console.log(">>>>>>>>>>" + user.email)
+            console.log(">>>>>>>>>>" + user.password)
             if (!user) {
                 return res.status(404).json({
                     status: "Failed",
@@ -18,7 +19,7 @@ const api_login = async (req, res) => {
                     status: "Failed",
                     message: "Password is Incorrect",
                 })
-            } else if(!user.password){
+            } else if (!user.password) {
                 console.log("wrong password")
             } else {
                 var token = jwt.sign({ id: user.id }, "password")
@@ -30,9 +31,9 @@ const api_login = async (req, res) => {
                 })
             }
         })
-        
-    } catch(error){
-    console.log(`Error: ${error}`)
+
+    } catch (error) {
+        console.log(`Error: ${error}`)
     }
 
 }
@@ -67,30 +68,86 @@ const api_register = async (req, res) => {
                             message: "Registeration failed, No data supplied by the user",
                         })
                     } else {
-                        user.save().then((result) => {
-                            return res.json({
-                                status: "sucess",
-                                message: "The registeration is successful",
-                                token: token,
-                                data: result
-                            })
-                        }).catch((error) => {
-                            return res.status(404).json({
-                                status: "Failed",
-                                message: "No response from the backend",
-                                data: error
-                            })
+                        let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
+                        let otpcode = Date().substring(22, 25).trim() + rd;
+                        handleSendOTP(username, email, otpcode, function (done) {
+                            if (done === "Successful") {
+                                user.save().then((result) => {
+                                    return res.json({
+                                        status: "sucess",
+                                        message: "The registeration is successful",
+                                        token: token,
+                                        data: result
+                                    })
+                                }).catch((error) => {
+                                    return res.status(404).json({
+                                        status: "Failed",
+                                        message: "No response from the backend",
+                                        data: error
+                                    })
+                                })
+
+                            } else {
+
+                            }
+
                         })
+
                     }
                 }
             }
         )
 
-
     } catch (error) {
         console.log(`Message: ${error}`)
     }
-    l
+}
+
+function handleSendOTP(email, username, otpcode, done) {
+    let company = "Soft-Engine"
+    const output = `
+    <p>You have a new request</p>
+    <h3>Contact Details</h3>
+    <ul>
+        <li>Name: ${username}</li>
+        <li>Company: ${company}</li>
+        <li>Email: ${email}</li>
+    </ul>
+    <h3>Message</h3>
+    <p>${otpcode}</p>
+    `
+
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL, // generated ethereal user testAccount.user,
+            pass: process.env.PASSWORD, // generated ethereal password
+        },
+        tls: {
+            rejectUnauthorization: false,
+        }
+    });
+
+    let mailOptions = {
+        from: '"Nodemailer contact 👻"' + email, // sender address
+        to: 'abeeb.ilias@gmail.com', // list of receivers "bar@example.com, baz@example.com"
+        subject: "Email Verification", // Subject line
+        text: "WELCOME, Pls, verify the otp below in out application", // plain text body
+        html: output, // html body
+    }
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        } else {
+            console.log("Message sent: %s", info.messageId);
+            console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        }
+    });
+
 
 }
 
@@ -202,7 +259,7 @@ const api_updateUserRecord = async (req, res) => {
         var decoded = jwt.verify(token, "password");
         console.log(decoded.id);
         try {
-            if (decoded){
+            if (decoded) {
                 Register.findOneAndUpdate(
                     { _id: id },
                     { $set: { username: Username, email: Email, password: Password } },
@@ -223,7 +280,7 @@ const api_updateUserRecord = async (req, res) => {
                                 status: "Success",
                                 message: data
                             })
-    
+
                         }
                     })
             } else {
@@ -232,7 +289,7 @@ const api_updateUserRecord = async (req, res) => {
                     message: "Unable to decode access token"
                 })
             }
-           
+
         } catch (error) {
             console.log(`Message: ${error}`)
         }
