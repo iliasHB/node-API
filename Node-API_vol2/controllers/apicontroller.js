@@ -88,7 +88,7 @@ const api_register = async (req, res) => {
                                 })
 
                             } else {
-
+                                console.log("No otp sent")
                             }
 
                         })
@@ -104,13 +104,17 @@ const api_register = async (req, res) => {
 }
 
 function handleSendOTP(email, username, otpcode, done) {
+    console.log("email: "+email)
+    console.log("username: "+username)
+    console.log("otpcode: "+otpcode)
     let company = "Soft-Engine"
+
     const output = `
     <p>You have a new request</p>
     <h3>Contact Details</h3>
     <ul>
         <li>Name: ${username}</li>
-        <li>Company: ${company}</li>
+        //<li>Company: ${company}</li>
         <li>Email: ${email}</li>
     </ul>
     <h3>Message</h3>
@@ -123,28 +127,35 @@ function handleSendOTP(email, username, otpcode, done) {
         secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.EMAIL, // generated ethereal user testAccount.user,
-            pass: process.env.PASSWORD, // generated ethereal password
+            pass: process.env.PASSWORD // generated ethereal password
         },
         tls: {
             rejectUnauthorization: false,
         }
     });
 
+    console.log("email: "+process.env.EMAIL)
+    console.log("password: "+process.env.PASSWORD)
+
     let mailOptions = {
-        from: '"Nodemailer contact 👻"' + email, // sender address
+        from: "Nodemailer contact 👻" + process.env.EMAIL, // sender address
         to: 'abeeb.ilias@gmail.com', // list of receivers "bar@example.com, baz@example.com"
         subject: "Email Verification", // Subject line
         text: "WELCOME, Pls, verify the otp below in out application", // plain text body
-        html: output, // html body
+        html: output // html body
     }
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
+        console.log(">>>>>>>>>>> here <<<<<<<<<<<<<<<<<")
         if (error) {
-            return console.log(error);
+            console.log(`>>>>> Error message: ${error}`);
+            console.log(">>>>>>>>>>> Error here <<<<<<<<<<<<<<<<<")
         } else {
+            console.log(">>>>>>>>>>> Success here <<<<<<<<<<<<<<<<<")
             console.log("Message sent: %s", info.messageId);
             console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+            return done
         }
     });
 
