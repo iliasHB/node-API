@@ -71,7 +71,7 @@ const api_register = async (req, res) => {
                         let rd = Math.floor(Math.random() * (1000 - 0 + 1000)) + 0;
                         let otpcode = Date().substring(22, 25).trim() + rd;
                         handleSendOTP(username, email, otpcode, function (done) {
-                            if (done === "Successful") {
+                            if (done) {
                                 user.save().then((result) => {
                                     return res.json({
                                         status: "sucess",
