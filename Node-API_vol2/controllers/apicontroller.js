@@ -72,20 +72,21 @@ const api_register = async (req, res) => {
                         let otpcode = Date().substring(22, 25).trim() + rd;
                         handleSendOTP(username, email, otpcode, function (done) {
                             if (done) {
-                                user.save().then((result) => {
-                                    return res.json({
-                                        status: "sucess",
-                                        message: "The registeration is successful",
-                                        token: token,
-                                        data: result
-                                    })
-                                }).catch((error) => {
-                                    return res.status(404).json({
-                                        status: "Failed",
-                                        message: "No response from the backend",
-                                        data: error
-                                    })
-                                })
+                                console.log('otp sent successfully')
+                                // user.save().then((result) => {
+                                //     return res.json({
+                                //         status: "sucess",
+                                //         message: "The registeration is successful",
+                                //         token: token,
+                                //         data: result
+                                //     })
+                                // }).catch((error) => {
+                                //     return res.status(404).json({
+                                //         status: "Failed",
+                                //         message: "No response from the backend",
+                                //         data: error
+                                //     })
+                                // })
 
                             } else {
                                 console.log("No otp sent")
@@ -114,7 +115,7 @@ function handleSendOTP(email, username, otpcode, done) {
     <h3>Contact Details</h3>
     <ul>
         <li>Name: ${username}</li>
-        //<li>Company: ${company}</li>
+        <li>Company: ${company}</li>
         <li>Email: ${email}</li>
     </ul>
     <h3>Message</h3>
@@ -150,7 +151,6 @@ function handleSendOTP(email, username, otpcode, done) {
         console.log(">>>>>>>>>>> here <<<<<<<<<<<<<<<<<")
         if (error) {
             console.log(`>>>>> Error message: ${error}`);
-            console.log(">>>>>>>>>>> Error here <<<<<<<<<<<<<<<<<")
         } else {
             console.log(">>>>>>>>>>> Success here <<<<<<<<<<<<<<<<<")
             console.log("Message sent: %s", info.messageId);
