@@ -19,21 +19,26 @@ const upload = multer({
     storage: Storage
 }).single('testImage')
 
-const api_upload = async (req, res, err) => {
-if (err){
-    console.log(err)
-} else {
-    const newImage = new ImageModel({
-        name: req.body.name,
-        Image: {
-            data: req.file.filename,
-            contentType: 'image/png'
+const api_upload = async(req, res) => {
+    upload (req, res, (err) => {
+        if (err){
+            console.log(err)
+        } else {
+            const newImage = new ImageModel({
+                name: req.body.name,
+                Image: {
+                    data: req.file.filename,
+                    contentType: 'image/png'
+                }
+            })
+            newImage.save()
+            .then(() =>res.send('Image successfully uploaded'))
+            .catch((err) => {
+                console.log(err)
+            });
         }
     })
-    newImage.save().then(() =>res.send('Image successfully uploaded')).catch((err) => {
-        console.log(err)
-    });
-}
+
 }
 
 const api_userPost = async (req, res) => {
@@ -651,7 +656,8 @@ module.exports = {
     api_allPostComments,
     api_postLike,
     api_deletePostLike,
-    api_postActivity
+    api_postActivity, 
+    api_upload
 }
 
 

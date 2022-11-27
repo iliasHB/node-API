@@ -24,6 +24,7 @@ router.delete('/posts/delcommentlike', apipostcontroller.api_deleteCommentLike);
 router.delete('/posts/:id', apipostcontroller.api_deletePost);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
 router.get('/posts/postactivity/:id', apipostcontroller.api_postActivity); 
+router.post('/posts/upload', apipostcontroller.api_upload);
 
 
 module.exports = router;
