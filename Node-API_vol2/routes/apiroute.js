@@ -25,6 +25,7 @@ router.delete('/posts/:id', apipostcontroller.api_deletePost);
 router.get('/posts/postcomments/:id', apipostcontroller.api_allPostComments);
 router.get('/posts/postactivity/:id', apipostcontroller.api_postActivity); 
 router.post('/posts/upload', apipostcontroller.api_upload);
+router.post('/user/connect', apipostcontroller.api_connect);
 
 
 module.exports = router;

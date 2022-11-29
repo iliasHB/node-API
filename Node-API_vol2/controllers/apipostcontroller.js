@@ -7,11 +7,11 @@ const postLike = require('../models/like');
 const commentLike = require('../models/comment_like');
 const comment = require('../models/comment');
 const multer = require('multer');
-const ImageModel = require('./image_model')
+const ImageModel = require('../models/image_model');
 
 const Storage = multer.diskStorage({
     destination: "upload",
-    filename: (req, res, cb) => {
+    filename: (req, file, cb) => {
         cb(null, file.originalname);
     }
 })
@@ -20,6 +20,7 @@ const upload = multer({
 }).single('testImage')
 
 const api_upload = async(req, res) => {
+    console.log(`upload API`)
     upload (req, res, (err) => {
         if (err){
             console.log(err)
@@ -28,17 +29,24 @@ const api_upload = async(req, res) => {
                 name: req.body.name,
                 Image: {
                     data: req.file.filename,
-                    contentType: 'image/png'
+                    contentType: 'image/jpg'
                 }
             })
             newImage.save()
             .then(() =>res.send('Image successfully uploaded'))
             .catch((err) => {
+                console.log('-------Error-------------')
                 console.log(err)
+                res.json(err)
             });
         }
     })
 
+}
+
+const api_connect = async(req, res) => {
+    console.log('api-connect');
+    res.send('connect me');
 }
 
 const api_userPost = async (req, res) => {
@@ -657,7 +665,8 @@ module.exports = {
     api_postLike,
     api_deletePostLike,
     api_postActivity, 
-    api_upload
+    api_upload,
+    api_connect
 }
 
 
