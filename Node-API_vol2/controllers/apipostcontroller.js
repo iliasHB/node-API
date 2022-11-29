@@ -7,7 +7,7 @@ const postLike = require('../models/like');
 const commentLike = require('../models/comment_like');
 const comment = require('../models/comment');
 const multer = require('multer');
-const ImageModel = require('../models/image_model');
+const imageUpload = require('../models/image_model');
 
 const Storage = multer.diskStorage({
     destination: "upload",
@@ -25,7 +25,7 @@ const api_upload = async(req, res) => {
         if (err){
             console.log(err)
         } else {
-            const newImage = new ImageModel({
+            const newImage = new imageUpload({
                 name: req.body.name,
                 Image: {
                     data: req.file.filename,
