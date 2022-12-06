@@ -10,12 +10,14 @@ class ServiceRegistry {
     }
 
     getService(name, version){
+        this.DeallocateService();
         const serviceList = Object.values(this.services)
         .filter(service => service.name === name && semver.satisfies(service.version, version))
         return serviceList[Math.floor(Math.random() * serviceList.length)];
     }
 
     register(name, version, ip, port){
+        this.DeallocateService();
         const key = name+version+ip+port;
         if (!this.services[key]){
             this.services[key] = {}
@@ -35,6 +37,15 @@ class ServiceRegistry {
         const key = name+version+ip+port;
         delete this.services[key];
         return key;
+    }
+    DeallocateService(){
+        var now = Math.floor(new Date() / 1000);
+        Object.keys(this.services).forEach((key) => {
+            if(this.services[key],timestamp + this.timeout < now) {
+                delete this.services[key];
+                this.log.debug(`Removed service ${key}`);
+            }
+        } )
     }
 }
 

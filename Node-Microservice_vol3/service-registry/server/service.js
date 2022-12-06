@@ -16,6 +16,7 @@ module.exports = (config) => {
 
 service.put('/register/:servicename/:serviceversion/:serviceport', (req, res) => {
   console.log(">>>>>>>>> Register <<<<<<<<<<<<<<");
+  
   const {servicename, serviceversion, serviceport} = req.params;
   const serviceip = req.socket.remoteAddress.includes('::') ? `[${req.socket.remoteAddress}]` : req.socket.remoteAddress;
   const serviceKey = serviceRegistry.register(servicename, serviceversion, serviceip, serviceport);
@@ -44,7 +45,7 @@ service.delete('/unregister/:servicename/:serviceversion/:serviceport', (req, re
       serviceVersion: serviceversion,
       serviceIp: serviceip,
       serviceport: serviceport,
-      // servicePath: `http://localhost/register/${serviceKey}`
+      servicePath: `http://localhost/unregister/${serviceKey}`
     })
   })
 });
