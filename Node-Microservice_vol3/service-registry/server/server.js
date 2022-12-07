@@ -11,6 +11,6 @@ server.listen(process.env.PORT || 3000)
 
 server.on('listening', () => {
     log.info(
-      `Hi there! I'm listening on port ${server.address().port} in ${service.get('env')} mode.`,
+      `listening on port ${server.address().port} in ${service.get('env')} mode.`,
     );
   });
