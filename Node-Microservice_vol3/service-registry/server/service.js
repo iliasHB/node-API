@@ -54,12 +54,12 @@ service.get('/find/:servicename/:serviceversion', (req, res) => {
   const {servicename, serviceversion} = req.params;
   const serviceKey = serviceRegistry.getService(servicename, serviceversion);
   if(!serviceKey){
-    res.status(400).json({
+    return res.status(400).json({
       statusCode: "400",
       message: "No service found"
     })
   } else {
-    res.json({
+    return res.json({
       statusCode: "200",
       message: "Service found successfully",
       service: serviceKey
